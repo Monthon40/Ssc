@@ -22,7 +22,7 @@ public class Simulator {
     private static final double FOX_CREATION_PROBABILITY = 0.02;
     // The probability that a rabbit will be created in any given position.
     private static final double RABBIT_CREATION_PROBABILITY = 0.08;
-
+    //ttt
     // Lists of animals in the field.
     private List<Animal> animals;
     // The current state of the field.
