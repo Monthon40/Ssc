@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
 
+import static javax.swing.UIManager.put;
+
 public class Simulator {
 
     // Constants representing configuration information for the simulation.
@@ -53,8 +55,11 @@ public class Simulator {
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Rabbit.class, Color.ORANGE);
-        view.setColor(Fox.class, Color.BLUE);
+
+        AnimalType[] animalTypes = AnimalType.values();
+        for(int i = 0; i < animalTypes.length; i++){
+            view.setColor(animalTypes[i].getAnimalClass(), animalTypes[i].getColor());
+        }
 
         // Setup a valid starting point.
         reset();
