@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class Animal {
+
+    protected static final Random RANDOM = new Random();
     // Whether the animal is alive or not.
     private boolean alive;
 
@@ -13,9 +15,17 @@ public abstract class Animal {
     protected Field field;
     // Individual characteristics (instance fields).
     // The fox's age.
-    protected int  age;
+    protected int age = 0;
 
-    private static final Random RANDOM = new Random();
+
+    public void initialize(boolean randomAge, Field field, Location location){
+        this.field = field;
+        setAlive(true);
+        setLocation(location);
+        if (randomAge) {
+            age = RANDOM.nextInt(getMaxAge());
+        }
+    }
 
 
     /**
@@ -105,27 +115,44 @@ public abstract class Animal {
 
     protected abstract int getBreedingAge();
 
-    protected abstract Animal createYoung(boolean randomAge, Field field, Location location);
+    protected Animal createYoung(boolean randomAge, Field field, Location location) {
+        return AnimalFactory.createAnimal(this.getClass(), field, location);
+    }
 
     /**
      * Check whether or not this rabbit is to give birth at this step. New
      * births will be made into free adjacent locations.
      *
-     * @param newRabbits A list to return newly born rabbits.
+     * @param newAnimals A list to return newly born rabbits.
      */
-    protected void giveBirth(List<Animal> newRabbits) {
-        // New rabbits are born into adjacent locations.
-        // Get a list of adjacent free locations.
+    protected void giveBirth(List<Animal> newAnimals) {
         List<Location> free = field.getFreeAdjacentLocations(location);
         int births = breed();
         for (int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             Animal young = createYoung(false, field, loc);
-            newRabbits.add(young);
+            newAnimals.add(young);
         }
     }
 
-    public abstract void act(List<Animal> animals);
+    protected abstract Location moveToNewLocation();
+
+    public void act(List<Animal> newAnimals){
+        incrementAge();
+        if (isAlive()) {
+            giveBirth(newAnimals);
+            // Try to move into a free location.
+            Location newLocation = moveToNewLocation();
+            if (newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                // Overcrowding.
+                setDead();
+            }
+        }
+    }
+
+
 
 
 }

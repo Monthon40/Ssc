@@ -2,10 +2,8 @@ package io.muic.ooc.fab;
 
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 public class Fox extends Animal {
-    // Characteristics shared by all foxes (class variables).
 
     // The age at which a fox can start to breed.
     private static final int BREEDING_AGE = 15;
@@ -18,8 +16,6 @@ public class Fox extends Animal {
     // The food value of a single rabbit. In effect, this is the
     // number of steps a fox can go before it has to eat again.
     private static final int RABBIT_FOOD_VALUE = 9;
-    // Random generator
-    private static final Random RANDOM = new Random();
 
     // The fox's food level, which is increased by eating rabbits.
     private int foodLevel;
@@ -32,47 +28,34 @@ public class Fox extends Animal {
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Fox(boolean randomAge, Field field, Location location) {
-        age = 0;
+
+    @Override
+    public void initialize(boolean randomAge, Field field, Location location) {
+        super.initialize(randomAge, field, location);
         setAlive(true);
-        this.field = field;
-        setLocation(location);
-        if (randomAge) {
-            age = RANDOM.nextInt(MAX_AGE);
-            foodLevel = RANDOM.nextInt(RABBIT_FOOD_VALUE);
-        } else {
-            // leave age at 0
-            foodLevel = RANDOM.nextInt(RABBIT_FOOD_VALUE);
-        }
+        foodLevel = RANDOM.nextInt(RABBIT_FOOD_VALUE);
     }
 
     /**
      * This is what the fox does most of the time: it hunts for rabbits. In the
      * process, it might breed, die of hunger, or die of old age.
      *
-     * @param field The field currently occupied.
-     * @param animals A list to return newly born foxes.
+     * @param newAnimal A list to return newly born foxes.
      */
     @Override
-    public void act(List<Animal> animals) {
-        incrementAge();
+    public void act(List<Animal> newAnimal) {
         incrementHunger();
-        if (isAlive()) {
-            giveBirth(animals);
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            if (newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = field.freeAdjacentLocation(location);
-            }
-            // See if it was possible to move.
-            if (newLocation != null) {
-                setLocation(newLocation);
-            } else {
-                // Overcrowding.
-                setDead();
-            }
+        super.act(newAnimal);
+    }
+
+    @Override
+    protected Location moveToNewLocation() {
+        Location newLocation = findFood();
+        if (newLocation == null) {
+            // No food found - try to move to a free location.
+            newLocation = field.freeAdjacentLocation(location);
         }
+        return newLocation;
     }
 
     /**
@@ -129,8 +112,4 @@ public class Fox extends Animal {
         return BREEDING_AGE;
     }
 
-    @Override
-    protected Animal createYoung(boolean randomAge, Field field, Location location) {
-        return new Fox(randomAge, field, location);
-    }
 }
