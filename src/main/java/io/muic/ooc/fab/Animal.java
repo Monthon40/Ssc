@@ -17,6 +17,11 @@ public abstract class Animal {
     // The fox's age.
     protected int age = 0;
 
+    protected static final int RABBIT_FOOD_VALUE = 9;
+    protected static final int FOX_FOOD_VALUE = 3;
+    protected static final int TIGER_FOOD_VALUE = 6;
+
+
 
     public void initialize(boolean randomAge, Field field, Location location){
         this.field = field;
@@ -151,8 +156,4 @@ public abstract class Animal {
             }
         }
     }
-
-
-
-
 }
